@@ -2,14 +2,16 @@
 import numpy as np
 import sys
 import cv2
+from EigenFace import *
 
 # Ensuring correct arguments
 if not (len(sys.argv) == 4 or len(sys.argv) == 5):
 	print "Usage : %s <dataDir> <tmplDir> <mode> {image path}" % sys.argv[0]
 	sys.exit()
 
-dataDir = sys.argv[1]
-tmplDir = sys.argv[2]
+curDir = os.getcwd() + os.sep
+dataDir = curDir + sys.argv[1]
+tmplDir = curDir + sys.argv[2]
 mode = sys.argv[3]
 
 eiVecs = loadModel(dataDir)
@@ -30,9 +32,9 @@ if mode == "image":
 	img = cv2.imread(sys.argv[4], 0)
 	labelPred = predict(img)
 
-else if mode == "video":
+elif mode == "video":
 	cap = cv2.VideoCapture(0)
-	faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+	faceCascade = cv2.CascadeClassifier('xmls/haarcascade_frontalface_default.xml')
 	while True:
 		ret, frame = cap.read()
 		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
