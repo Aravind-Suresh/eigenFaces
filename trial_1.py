@@ -4,11 +4,6 @@ import sys
 import cv2
 import os
 
-# Ensuring correct arguments
-if not len(sys.argv) == 4:
-	print "Usage : %s <trainFile> <testFile> <tmplDir>" % sys.argv[0]
-	sys.exit()
-
 # Constants
 dim = cv2.imread(trainList[0], 0).shape
 
@@ -39,20 +34,22 @@ def computeLoss(tmpl, pred):
 	loss = np.sqrt(np.sum((pred-tmpl)**2))
 	return loss
 
+# Incomplete
 def test(testList, eiVecs):
 	temp = map(lambda line: line.split(' '), testList)
 	testset = [ np.ravel(cv2.resize(cv2.imread(path, 0), dim)) for path in temp[:, 0]]
 	testLabels = temp[:, 1]
 
 	output = [ computeCoeff(img, eiVecs) for img in testset ]
-	
+	data = load(tmplDir)
+
 	# TODO : Compute loss and give a match
 	return output
 
-def save(label, coeff):
+def saveTemplate(tmplDir, label, coeff):
 	np.save(tmplDir + os.sep + label, coeff)
 
-def load(tmplDir):
+def loadTemplates(tmplDir):
 	data = {}
 	for name in os.listdir(tmplDir):
 		if name.endswith("*.npy"):
@@ -60,12 +57,8 @@ def load(tmplDir):
 
 	return data
 
-trainFile = sys.argv[1]
-testFile = sys.argv[2]
-tmplDir = sys.argv[3]
+def loadModel(dataDir):
+	return
 
-trainList = loadListFromFile(trainFile)
-testList = loadListFromFile(testFile)
-dim, mean, eiVals, eiVecs = train(trainList)
-
-test(testList, eiVecs)
+def saveModel(dataDir, eiVecs):
+	return
