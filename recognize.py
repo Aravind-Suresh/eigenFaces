@@ -14,8 +14,7 @@ dataDir = curDir + sys.argv[1]
 tmplDir = curDir + sys.argv[2]
 mode = sys.argv[3]
 
-eiVecs = loadModel(dataDir)
-mean = np.load(dataDir + os.sep + "mean.npy")
+mean, eiVecs = loadModel(dataDir)
 tmplData = loadTemplates(tmplDir)
 
 def predict(img):

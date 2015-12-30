@@ -59,7 +59,8 @@ def loadTemplates(tmplDir):
 	return data
 
 def loadModel(dataDir):
-	return np.load(dataDir + os.sep + "model.npy")
+	return np.load(dataDir + os.sep + "mean.npy"), np.load(dataDir + os.sep + "model.npy")
 
-def saveModel(dataDir, eiVecs):
+def saveModel(dataDir, mean, eiVecs):
+	np.save(dataDir + os.sep + "mean", mean)
 	np.save(dataDir + os.sep + "model", eiVecs)

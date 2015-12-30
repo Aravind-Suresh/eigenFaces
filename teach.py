@@ -15,8 +15,7 @@ tmplDir = curDir + sys.argv[2]
 label = sys.argv[3]
 mode = sys.argv[4]
 
-eiVecs = np.load(dataDir + os.sep + "model.npy") # loadModel(dataDir)
-mean = np.load(dataDir + os.sep + "mean.npy")
+mean, eiVecs = loadModel(dataDir)
 
 img = None
 
@@ -26,12 +25,11 @@ faceIdx = None
 def chooseFace(event, x, y, flags, param):
 	global faceIdx
 	if event == cv2.EVENT_LBUTTONUP:
-		print "hello", x, y, facesG[0]
 		if not facesG == None:
 			idx = 0
 			for(_x, _y, _w, _h) in facesG:
 				if x>_x and x<_x+_w and y>_y and y<_y+_h:
-					print idx
+					# print idx
 					faceIdx = idx
 					break
 				idx += 1

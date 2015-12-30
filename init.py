@@ -16,4 +16,4 @@ dataDir = curDir + sys.argv[2]
 trainList = loadListFromFile(trainFile)
 mean, eiVals, eiVecs = train(trainList)
 
-saveModel(dataDir, eiVecs)
+saveModel(dataDir, mean, eiVecs)
