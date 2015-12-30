@@ -15,6 +15,12 @@ mode = sys.argv[3]
 eiVecs = loadModel(dataDir)
 tmplData = loadTemplates(tmplDir)
 
+def predict(img):
+	coeffPred = computeCoeff(img, eiVecs)
+	temp = dict(map(lambda (k, v): (k, computeLoss(v, coeffPred)), tmplData.iteritems()))
+	labelPred = min(tmplData, key=tmplData.get)
+	return labelPred
+
 img = None
 
 if mode == "image":
@@ -22,6 +28,7 @@ if mode == "image":
 		print "Usage : %s <dataDir> <tmplDir> <mode> {image path}" % sys.argv[0]
 		sys.exit()
 	img = cv2.imread(sys.argv[4], 0)
+	labelPred = predict(img)
 
 else if mode == "video":
 	cap = cv2.VideoCapture(0)
@@ -32,10 +39,12 @@ else if mode == "video":
 		faces = faceCascade.detectMultiScale(gray, 1.3, 5)
 		rois = []
 		for (x, y, w, h) in faces:
-			coeff = computeCoeff(gray[y:y+h, x:x+w], eiVecs)
-			labelPred = np.min(map())
+			labelPred = predict(gray[y:y+h, x:x+w])
 			cv2.rectangle(frame, (x,y), (x+w,y+h),(255,0,0),2)
 
+		k = cv2.waitKey(1)
+		if k == 27:
+			break
+
 		cv2.namedWindow("Cam")
-		cv2.setMouseCallback("Cam", chooseFace)
 		cv2.imshow("Cam", frame)
