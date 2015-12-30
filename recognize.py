@@ -15,12 +15,13 @@ tmplDir = curDir + sys.argv[2]
 mode = sys.argv[3]
 
 eiVecs = loadModel(dataDir)
+mean = np.load(dataDir + os.sep + "mean.npy")
 tmplData = loadTemplates(tmplDir)
 
 def predict(img):
-	coeffPred = computeCoeff(img, eiVecs)
+	coeffPred = computeCoeff(img, mean, eiVecs)
 	temp = dict(map(lambda (k, v): (k, computeLoss(v, coeffPred)), tmplData.iteritems()))
-	labelPred = min(tmplData, key=tmplData.get)
+	labelPred = min(temp, key=temp.get)
 	return labelPred
 
 img = None
@@ -31,6 +32,7 @@ if mode == "image":
 		sys.exit()
 	img = cv2.imread(sys.argv[4], 0)
 	labelPred = predict(img)
+	print "Recognised :", labelPred
 
 elif mode == "video":
 	cap = cv2.VideoCapture(0)
@@ -42,6 +44,8 @@ elif mode == "video":
 		rois = []
 		for (x, y, w, h) in faces:
 			labelPred = predict(gray[y:y+h, x:x+w])
+			font = cv2.FONT_HERSHEY_SIMPLEX
+			cv2.putText(frame, labelPred, (x+w/2,y-10), font, 0.6, (255, 255, 255), 1)
 			cv2.rectangle(frame, (x,y), (x+w,y+h),(255,0,0),2)
 
 		k = cv2.waitKey(1)

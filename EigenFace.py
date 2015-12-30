@@ -53,8 +53,8 @@ def saveTemplate(tmplDir, label, coeff):
 def loadTemplates(tmplDir):
 	data = {}
 	for name in os.listdir(tmplDir):
-		if name.endswith("*.npy"):
-			data[name] = np.load(name)
+		if name.endswith(".npy"):
+			data[name.replace(".npy", "")] = np.load(tmplDir + os.sep + name)
 
 	return data
 
