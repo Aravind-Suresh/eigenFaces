@@ -2,10 +2,11 @@
 import numpy as np
 import sys
 import cv2
+import os
 
 # Ensuring correct arguments
 if not len(sys.argv) == 4:
-	print "Usage : %s <trainFile> <testFile> <outputDirectory>" % sys.argv[0]
+	print "Usage : %s <trainFile> <testFile> <tmplDir>" % sys.argv[0]
 	sys.exit()
 
 # Constants
@@ -29,27 +30,42 @@ def train(trainList):
 
 	return mean, w, v
 
+def computeCoeff(img, eiVecs):
+	coeff = map(lambda v: np.dot(v, img), eiVecs)
+	return coeff
+
+def computeLoss(tmpl, pred):
+	# L2 Loss
+	loss = np.sqrt(np.sum((pred-tmpl)**2))
+	return loss
+
 def test(testList, eiVecs):
 	temp = map(lambda line: line.split(' '), testList)
 	testset = [ np.ravel(cv2.resize(cv2.imread(path, 0), dim)) for path in temp[:, 0]]
 	testLabels = temp[:, 1]
 
-	output = [ compute(img, eiVecs) for img in testset ]
-
+	output = [ computeCoeff(img, eiVecs) for img in testset ]
+	
 	# TODO : Compute loss and give a match
 	return output
 
-def compute(img, eiVecs):
-	coeff = map(lambda v: np.dot(v, imgR), eiVecs)
-	return coeff
+def save(label, coeff):
+	np.save(tmplDir + os.sep + label, coeff)
+
+def load(tmplDir):
+	data = {}
+	for name in os.listdir(tmplDir):
+		if name.endswith("*.npy"):
+			data[name] = np.load(name)
+
+	return data
 
 trainFile = sys.argv[1]
 testFile = sys.argv[2]
-outputDirectory = sys.argv[3]
+tmplDir = sys.argv[3]
 
 trainList = loadListFromFile(trainFile)
 testList = loadListFromFile(testFile)
 dim, mean, eiVals, eiVecs = train(trainList)
 
-img = cv2.imread(testFile, 0)
-coeff = compute(img, dim, eiVecs)
+test(testList, eiVecs)
