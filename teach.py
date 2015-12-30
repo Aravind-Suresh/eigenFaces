@@ -4,7 +4,7 @@ import sys
 import cv2
 
 # Ensuring correct arguments
-if not len(sys.argv) == 6:
+if not (len(sys.argv) == 5 or len(sys.argv) == 6):
 	print "Usage : %s <dataDir> <tmplDir> <label> <mode> {image path}" % sys.argv[0]
 	sys.exit()
 
@@ -17,6 +17,19 @@ eiVecs = loadModel(dataDir)
 
 img = None
 
+facesG = None
+faceIdx = None
+
+def chooseFace(event, x, y, flags, param):
+	if event == cv2.EVENT_LBUTTONUP:
+		if not facesG == None:
+			idx = 0
+			for(_x, _y, _w, _h) in facesG:
+				if x>_x and x<_x+_w and y>_y and y<_y+_h:
+					faceIdx = idx
+					return
+				idx += 1
+
 if mode == "image":
 	if not len(sys.argv) == 6:
 		print "Usage : %s <dataDir> <tmplDir> <label> <mode> {image path}" % sys.argv[0]
@@ -25,17 +38,21 @@ if mode == "image":
 
 else if mode == "video":
 	cap = cv2.VideoCapture(0)
+	faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 	while True:
 		ret, frame = cap.read()
-		faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		faces = faceCascade.detectMultiScale(gray, 1.3, 5)
-		for (x,y,w,h) in faces:
-			cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
-		k = cv2.waitKey(1)
-		if k == 27:
-			# Choose rectangle, if no rectangle abort
+		facesG = faces
+		for (x, y, w, h) in faces:
+			cv2.rectangle(frame, (x,y), (x+w,y+h),(255,0,0),2)
+
+		if not faceIdx == None:
+			img = gray[y:y+h, x:x+w]
 			break
+
+		cv2.namedWindow("Cam")
+		cv2.setMouseCallback("Cam", chooseFace)
 		cv2.imshow("Cam", frame)
 
 coeff = computeCoeff(img, eiVecs)
