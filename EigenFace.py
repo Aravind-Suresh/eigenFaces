@@ -5,7 +5,7 @@ import cv2
 import os
 
 # Constants
-dim = (23, 28) # cv2.imread(trainList[0], 0).shape
+dim = (18, 18) # cv2.imread(trainList[0], 0).shape
 
 def loadListFromFile(filePath):
 	return map(lambda path: path.strip(), open(filePath, 'r').readlines())
