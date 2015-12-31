@@ -15,6 +15,10 @@ tmplDir = curDir + sys.argv[2]
 label = sys.argv[3]
 mode = sys.argv[4]
 
+if not (mode == "image" or mode == "video"):
+	print "Invalid mode : %s. <mode> can be [image] or [video]" % mode
+	sys.exit()
+
 mean, eiVecs = loadModel(dataDir)
 
 img = None
