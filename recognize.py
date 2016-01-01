@@ -25,7 +25,7 @@ def predict(img):
 	coeffPred = computeCoeff(img, mean, eiVecs)
 	temp = dict(map(lambda (k, v): (k, computeLoss(v, coeffPred)), tmplData.iteritems()))
 	labelPred = min(temp, key=temp.get)
-	return labelPred
+	return labelPred, temp[labelPred]
 
 img = None
 
@@ -34,8 +34,8 @@ if mode == "image":
 		print "Usage : %s <dataDir> <tmplDir> <mode> {image path}" % sys.argv[0]
 		sys.exit()
 	img = cv2.imread(sys.argv[4], 0)
-	labelPred = predict(img)
-	print "Recognised :", labelPred
+	labelPred, loss = predict(img)
+	print "Recognised :", labelPred, "Loss :", str(loss)
 
 elif mode == "video":
 	cap = cv2.VideoCapture(0)
@@ -46,9 +46,9 @@ elif mode == "video":
 		faces = faceCascade.detectMultiScale(gray, 1.3, 5)
 		rois = []
 		for (x, y, w, h) in faces:
-			labelPred = predict(gray[y:y+h, x:x+w])
+			labelPred, loss = predict(gray[y:y+h, x:x+w])
 			font = cv2.FONT_HERSHEY_SIMPLEX
-			cv2.putText(frame, labelPred, (x+w/2,y-10), font, 0.6, (255, 255, 255), 1)
+			cv2.putText(frame, labelPred + ', ' + str(loss), (x+w/2,y-10), font, 0.6, (255, 255, 255), 1)
 			cv2.rectangle(frame, (x,y), (x+w,y+h),(255,0,0),2)
 
 		k = cv2.waitKey(1)
