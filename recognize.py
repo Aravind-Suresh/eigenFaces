@@ -29,17 +29,25 @@ def predict(img):
 
 img = None
 
+faceCascade = cv2.CascadeClassifier('xmls/haarcascade_frontalface_default.xml')
+
 if mode == "image":
 	if not len(sys.argv) == 5:
 		print "Usage : %s <dataDir> <tmplDir> <mode> {image path}" % sys.argv[0]
 		sys.exit()
-	img = cv2.imread(sys.argv[4], 0)
-	labelPred, loss = predict(img)
-	print "Recognised :", labelPred, "Loss :", str(loss)
+	img = cv2.imread(sys.argv[4])
+	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+	faces = faceCascade.detectMultiScale(gray, 1.3, 5)
+	for (x, y, w, h) in faces:
+		labelPred, loss = predict(gray[y:y+h, x:x+w])
+		font = cv2.FONT_HERSHEY_SIMPLEX
+		cv2.putText(img, labelPred + ', ' + str(loss), (x+w/2,y-10), font, 0.6, (255, 255, 255), 1)
+		cv2.rectangle(img, (x,y), (x+w,y+h),(255,0,0),2)
+	cv2.imshow("Img", img)
+	cv2.waitKey(0)
 
 elif mode == "video":
 	cap = cv2.VideoCapture(0)
-	faceCascade = cv2.CascadeClassifier('xmls/haarcascade_frontalface_default.xml')
 	while True:
 		ret, frame = cap.read()
 		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
