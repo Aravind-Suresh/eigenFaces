@@ -32,7 +32,7 @@ def computeCoeff(img, mean, eiVecs):
 
 def computeLoss(tmpl, pred):
 	# L2 Loss
-	loss = np.sqrt(np.sum((pred-tmpl)**2))
+	loss = float(np.real(np.sqrt(np.sum((pred-tmpl)*np.conj(pred-tmpl)))))
 	return loss
 
 # Incomplete
