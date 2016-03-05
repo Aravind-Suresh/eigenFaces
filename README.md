@@ -47,7 +47,7 @@ $ python recognize.py data templates image /path/to/image
 $ python recognize.py data templates video
 ```
 
-The code can be reused with any other face dataset by regenerating `train.txt` appropriately.
+The code can be reused with any other face dataset by regenerating `data/train.txt` appropriately.
 
 ## Sample outputs
 
